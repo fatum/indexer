@@ -31,6 +31,20 @@ indexers:
 
 ```
 Indexer::Manager.indexers = Settings.indexers
+Indexer::ExecutorWorker.processed = lambda do |indexer, id|
+  ap indexer
+  ap id
+
+  Metric.local_hit :indexer_processed
+end
+
+Indexer::ExecutorWorker.failed = lambda do |indexer, id, e|
+  ap e
+  ap indexer
+  ap id
+
+  Metric.local_hit :indexer_failed
+end
 ```
 
 ### Indexer sample
