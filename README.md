@@ -50,3 +50,9 @@ OR
 ```
 snapshots00: bundle exec sidekiq -q snapshots -c 15
 ```
+
+And schedule periodically
+
+```
+IndexerManagerWorker
+```
