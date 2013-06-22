@@ -1,5 +1,13 @@
 ## Library currently extracting from internal project!!
 
+### Installation
+
+```
+bundle install
+bundle exec rake indexer:install:migrations
+bundle exec rake db:migrate
+```
+
 ### Configuration
 
 ```
