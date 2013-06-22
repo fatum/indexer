@@ -40,3 +40,13 @@ class Indexer::Snapshot
   end
 end
 ```
+
+### Workers
+
+```
+snapshots: bundle exec rake resque:workers QUEUE=snapshots COUNT=10
+```
+OR
+```
+snapshots00: bundle exec sidekiq -q snapshots -c 15
+```
