@@ -4,17 +4,17 @@ module Indexer
 
     sidekiq_options retry: false, unique: true
 
+    class_attribute :processed, :failed
+
     def perform(indexer, id)
       indexer.constantize.run(id)
-      Metric.local_hit :indexer_processed
+      self.processed.call(indexer, id) if self.processed.respond_to?(:call)
     rescue Exception => e
-      puts e.message
-      Metric.local_hit :indexer_failed
+      self.failed.call(indexer, id, e) if self.failed.respond_to?(:call)
     end
 
     def self.perform(args)
       indexer, id = args
-
       new.perform(indexer, id)
     end
   end

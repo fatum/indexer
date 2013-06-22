@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Indexer::VERSION
   s.authors     = ["Maxim Filippovich"]
   s.email       = ["fatumka@gmail.com"]
-  s.homepage    = "fatumka@gmail.com"
+  s.homepage    = "http://twitter.com/mfilippovich"
   s.summary     = "Scalable indexer"
   s.description = "Simple but efficient indexer implementation"
 
