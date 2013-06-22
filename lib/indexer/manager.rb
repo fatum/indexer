@@ -3,8 +3,8 @@ module Indexer
     # use Indexer::Manager.indexers = {} in config/initializers/indexers.rb
     class_attribute :indexers
 
-    def run!
-      self.indexers.to_hash.each do |name, attributes|
+    def self.run!
+      indexers.to_hash.each do |name, attributes|
 
         can_run_tasks = count_tasks_for_run(name, attributes[:limit], attributes[:resque])
 
@@ -28,7 +28,7 @@ module Indexer
 
     private
 
-    def count_tasks_for_run(name, limit, resque)
+    def self.count_tasks_for_run(name, limit, resque)
       enqueued = if resque
         Resque.size(name) || 0
       else
@@ -38,7 +38,7 @@ module Indexer
       limit - enqueued
     end
 
-    def enqueue(queue, indexer, id, resque)
+    def self.enqueue(queue, indexer, id, resque)
       if resque
         Resque::Job.create(
             queue, Indexer::ExecutorWorker, [indexer, id]
@@ -48,7 +48,7 @@ module Indexer
       end
     end
 
-    def update_latest_value(indexer, ids)
+    def self.update_latest_value(indexer, ids)
       value = if ids == 0
         ids
       else
@@ -58,7 +58,7 @@ module Indexer
       Indexer::Status.find_by_name(indexer.to_s).update_attribute(:last_processed_value, value)
     end
 
-    def get_latest_value(indexer)
+    def self.get_latest_value(indexer)
       Indexer::Status.find_by_name(indexer.to_s).last_processed_value
     end
   end
