@@ -1,6 +1,6 @@
 namespace :indexer do
-  desc "Explaining what the task does"
-  task :schedule do
-    IndexerManagerWorker.perform
+  desc "Fill jobs for indexing"
+  task :schedule => :environment do
+    Indexer::ManagerWorker.new.perform
   end
 end
