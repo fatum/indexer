@@ -64,11 +64,11 @@ namespace Indexer
         ids.last
       end
 
-      IndexerStatus.find_by_name(indexer.to_s).update_attribute(:last_processed_value, value)
+      Indexer::Status.find_by_name(indexer.to_s).update_attribute(:last_processed_value, value)
     end
 
     def get_latest_value(indexer)
-      IndexerStatus.find_by_name(indexer.to_s).last_processed_value
+      Indexer::Status.find_by_name(indexer.to_s).last_processed_value
     end
   end
 end
