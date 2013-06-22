@@ -51,4 +51,4 @@ OR
 snapshots00: bundle exec sidekiq -q snapshots -c 15
 ```
 
-And schedule periodically IndexerManagerWorker in sidekiq or resque. Or run rake indexer:schedule
+And schedule periodically ```Indexer::ManagerWorker.run!``` in sidekiq or resque. Or run ```rake indexer:schedule```
