@@ -1,12 +1,12 @@
 module Indexer
   class Manager
     # use Indexer::Manager.indexers = {} in config/initializers/indexers.rb
-    class_attribute :indexers
+    class_attribute :indexers, :model
 
     def self.run!
       indexers.to_hash.each do |name, attributes|
 
-        can_run_tasks = count_tasks_for_run(name, attributes[:limit], attributes[:resque])
+        can_run_tasks = count_tasks_for_run(name, attributes[:limit])
 
         next unless can_run_tasks > 0
 
@@ -16,7 +16,7 @@ module Indexer
 
         if ids.present? && ids.respond_to?(:each)
           ids.take(can_run_tasks).each do |id|
-            enqueue(name, attributes[:indexer], id, attributes[:resque])
+            enqueue(name, attributes[:indexer], id)
           end
 
           update_latest_value(name, ids)
@@ -28,24 +28,13 @@ module Indexer
 
     private
 
-    def self.count_tasks_for_run(name, limit, resque)
-      enqueued = if resque
-        Resque.size(name) || 0
-      else
-        Sidekiq::Queue.new(name).size
-      end
-
+    def self.count_tasks_for_run(name, limit)
+      enqueued = Indexer::ExecutorWorker.size_block.call(name) || 0
       limit - enqueued
     end
 
-    def self.enqueue(queue, indexer, id, resque)
-      if resque
-        Resque::Job.create(
-            queue, Indexer::ExecutorWorker, [indexer, id]
-          )
-      else
-        Sidekiq::Client.push('queue' => queue, 'class' => Indexer::ExecutorWorker, 'args' => [indexer, id])
-      end
+    def self.enqueue(queue, indexer, id)
+      Indexer::ExecutorWorker.enqueue_block.call(queue, indexer, id)
     end
 
     def self.update_latest_value(indexer, ids)
@@ -55,11 +44,11 @@ module Indexer
         ids.last
       end
 
-      Indexer::Status.find_by_name(indexer.to_s).update_attribute(:last_processed_value, value)
+      model.find_by_name(indexer.to_s).update_attribute(:last_processed_value, value)
     end
 
     def self.get_latest_value(indexer)
-      Indexer::Status.find_by_name(indexer.to_s).last_processed_value
+      model.find_by_name(indexer.to_s).last_processed_value
     end
   end
 end

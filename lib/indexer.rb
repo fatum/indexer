@@ -1,7 +1,4 @@
-require 'sidekiq'
-require 'resque'
-
-require "indexer/engine"
+require "indexer/engine" if defined?(Rails)
 require "indexer/manager"
 require "indexer/executor_worker"
 
