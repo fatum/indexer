@@ -2,7 +2,8 @@ module Indexer
   class ExecutorWorker
     class_attribute :processed_block, :failed_block, :enqueue_block, :size_block
 
-    def self.perform(indexer, id)
+    def self.perform(args)
+      indexer, id = args
       indexer.constantize.run(id)
       self.processed_block.call(indexer, id) if self.processed_block.respond_to?(:call)
     rescue Exception => e
