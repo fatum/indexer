@@ -1,3 +1,4 @@
+require 'active_support/core_ext/class/attribute'
 require "indexer/engine" if defined?(Rails)
 require "indexer/manager"
 require "indexer/executor_worker"
